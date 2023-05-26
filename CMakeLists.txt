@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.6)
 
 project(hv VERSION 1.3.1)
 
-option(BUILD_SHARED "build shared library" ON)
+option(BUILD_SHARED "build shared library" OFF)
 option(BUILD_STATIC "build static library" ON)
 
 option(BUILD_EXAMPLES "build examples" ON)
@@ -11,10 +11,10 @@ option(BUILD_UNITTEST "build unittest" OFF)
 # see config.ini
 option(WITH_PROTOCOL "compile protocol" OFF)
 
-option(WITH_EVPP "compile evpp" ON)
-option(WITH_HTTP "compile http" ON)
-option(WITH_HTTP_SERVER "compile http/server" ON)
-option(WITH_HTTP_CLIENT "compile http/client" ON)
+option(WITH_EVPP "compile evpp" OFF)
+option(WITH_HTTP "compile http" OFF)
+option(WITH_HTTP_SERVER "compile http/server" OFF)
+option(WITH_HTTP_CLIENT "compile http/client" OFF)
 option(WITH_MQTT "compile mqtt" OFF)
 
 option(ENABLE_UDS "Unix Domain Socket" OFF)
@@ -235,25 +235,25 @@ if(BUILD_SHARED)
 endif()
 
 if(BUILD_STATIC)
-    add_library(hv_static STATIC ${LIBHV_SRCS})
-    target_compile_definitions(hv_static PUBLIC HV_STATICLIB)
-    target_include_directories(hv_static PRIVATE ${LIBHV_SRCDIRS}
+    add_library(libhv STATIC ${LIBHV_SRCS})
+    target_compile_definitions(libhv PUBLIC HV_STATICLIB)
+    target_include_directories(libhv PRIVATE ${LIBHV_SRCDIRS}
         INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
-    target_link_libraries(hv_static ${LIBS})
-    install(TARGETS hv_static
-        EXPORT libhvConfig
-        ARCHIVE DESTINATION lib)
-    add_custom_target(libhv_static DEPENDS hv_static)
+    target_link_libraries(libhv ${LIBS})
+    # install(TARGETS libhv
+    #     EXPORT libhvConfig
+    #     ARCHIVE DESTINATION lib)
+    add_custom_target(libhv_static DEPENDS libhv)
 endif()
 
-install(FILES ${LIBHV_HEADERS} DESTINATION include/hv)
-install(EXPORT libhvConfig DESTINATION lib/cmake/libhv)
+# install(FILES ${LIBHV_HEADERS} DESTINATION include/hv)
+# install(EXPORT libhvConfig DESTINATION lib/cmake/libhv)
 
 if(BUILD_SHARED)
     set(HV_LIBRARIES hv CACHE INTERNAL "link hv libraries")
 else()
     add_definitions(-DHV_STATICLIB)
-    set(HV_LIBRARIES hv_static ${LIBS} CACHE INTERNAL "link hv libraries")
+    set(HV_LIBRARIES libhv ${LIBS} CACHE INTERNAL "link hv libraries")
 endif()
 
 if(BUILD_EXAMPLES)

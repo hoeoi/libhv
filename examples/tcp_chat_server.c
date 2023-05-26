@@ -117,7 +117,7 @@ static void on_accept(hio_t* io) {
 
     hio_setcb_close(io, on_close);
     hio_setcb_read(io, on_recv);
-    hio_set_unpack(io, &unpack_setting);
+    // hio_set_unpack(io, &unpack_setting);
     hio_read_start(io);
 
     // free on_close
